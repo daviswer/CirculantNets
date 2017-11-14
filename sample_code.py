@@ -88,3 +88,36 @@ for it in range(10*epoch):
               "\nValidation loss is: "+str(evalloss)+"\n")
         runningloss = 0
         print(time.time()-start)
+
+
+
+
+class Block(nn.Module):
+    def __init__(self, insize, outsize):
+        super(Block, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(insize, outsize, kernel_size=3, padding=1),
+            nn.BatchNorm2d(outsize),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        
+    def forward(self, inp):
+        return self.layers(inp)
+
+class ENCODER(nn.Module):
+    def __init__(self):
+        super(ENCODER, self).__init__()
+        self.block1 = Block(3,64)
+        self.block2 = Block(64,64)
+        self.block3 = Block(64,64)
+        self.block4 = Block(64,64)
+#         self.final = nn.Conv2d(64,64, kernel_size=1, padding=0)
+        
+    def forward(self, inp):
+        out = self.block1(inp)
+        out = self.block2(out)
+        out = self.block3(out)
+        out = self.block4(out)
+#         out = self.final(out)
+        return out.view(out.size(0),-1)
